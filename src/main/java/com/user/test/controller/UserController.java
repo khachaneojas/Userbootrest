@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.user.test.model.UserModel;
 import com.user.test.payload.LoginRequest;
 import com.user.test.payload.RegisterUser;
+import com.user.test.payload.UpdateAuthority;
 import com.user.test.payload.UpdateUser;
 import com.user.test.response.UserResponse;
 import com.user.test.service.UserService;
@@ -90,5 +91,16 @@ public class UserController {
 	public ResponseEntity<?> updateuser(@Valid @RequestBody UpdateUser user) {
 			return new ResponseEntity<>(userService.updateUser(user), HttpStatus.ACCEPTED);
 		
+	}
+	
+	@PutMapping("/updateauth")
+	public ResponseEntity<?> updateAuthority(@Valid @RequestBody UpdateAuthority updateAuthority){
+		
+		UserResponse userResponse = userService.updateAuthority(updateAuthority);
+		
+		if (null==userResponse)
+				return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+		else 
+			return new ResponseEntity<>(userResponse, HttpStatus.ACCEPTED);
 	}
 }

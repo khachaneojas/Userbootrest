@@ -7,10 +7,16 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.user.test.enums.Authority;
+import com.user.test.exception.AccountDisabledException;
+import com.user.test.exception.InvalidDataException;
+import com.user.test.model.AuthorityModel;
 import com.user.test.model.UserModel;
 import com.user.test.payload.LoginRequest;
 import com.user.test.payload.RegisterUser;
+import com.user.test.payload.UpdateAuthority;
 import com.user.test.payload.UpdateUser;
+import com.user.test.repository.AuthorityRepository;
 import com.user.test.repository.UserRepository;
 import com.user.test.response.UserResponse;
 
@@ -19,12 +25,16 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	AuthorityRepository authorityRepository;
 
 	private UserResponse getUserResponseFromUserModel(UserModel userModel) {
 
 		return (null == userModel) ? null
 				: UserResponse.builder().id(userModel.getId()).firstname(userModel.getFirstname())
-						.lastname(userModel.getLastname()).email(userModel.getEmail()).username(userModel.getUsername())
+						.lastname(userModel.getLastname()).email(userModel.getEmail())
+						.username(userModel.getUsername()).authority(userModel.getAuthorityModel().getAuthority())
 						.build();
 	}
 
@@ -67,17 +77,19 @@ public class UserService {
 		return getUserResponseFromUserModel(user);
 	}
 
-	public boolean addUser(RegisterUser registerUser) {
+	public Boolean addUser(RegisterUser registerUser) {
 
 		Boolean isEmailAlreadyExist = userRepository.existsByEmail(registerUser.getEmail());
 		Boolean isUsernameAlreadyExist = userRepository.existsByUsername(registerUser.getUsername());
 
 		if (Boolean.TRUE.equals(isEmailAlreadyExist) || Boolean.TRUE.equals(isUsernameAlreadyExist))
 			return false;
+		
+		AuthorityModel defaultAuthority = authorityRepository.findByAuthority(Authority.Role_Default);
 
 		UserModel userModel = UserModel.builder().firstname(registerUser.getFirstname())
 				.lastname(registerUser.getLastname()).email(registerUser.getEmail())
-				.username(registerUser.getUsername()).password(registerUser.getPassword()).build();
+				.username(registerUser.getUsername()).password(registerUser.getPassword()).authorityModel(defaultAuthority).build();
 
 		try {
 			userRepository.save(userModel);
@@ -88,21 +100,26 @@ public class UserService {
 		return false;
 	}
 
-	public boolean login(LoginRequest loginRequest) {
-		try {
+	public Boolean login(LoginRequest loginRequest) {
 			UserModel userModel = userRepository.findByUsernameOrEmail(loginRequest.getUsername_or_email(),
 					loginRequest.getUsername_or_email());
 
 			if (null == userModel)
 				return false;
-
-			if (userModel.getPassword().equals(loginRequest.getPassword()))
-				return userModel.isEnabled();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+			
+			String userPasswordDB = userModel.getPassword();
+			
+			if(userPasswordDB.isBlank())
+				throw new InvalidDataException("Something went wrong, contact the administrator.");
+			
+			if (userModel.getPassword().equals(loginRequest.getPassword())) {
+				if(!userModel.isEnabled())
+					throw new AccountDisabledException("Oops! you're account has been disabled by the administrator.");
+				else
+					return true;
+			}
+			return false;
+			
 	}
 
 	public String updateUser(UpdateUser user) {
@@ -126,6 +143,29 @@ public class UserService {
 			userRepository.save(userModel);
 			return "User details for ID "+ userid + " updated successfully";
 			
+	}
+	
+	public UserResponse updateAuthority(UpdateAuthority updateAuthority) {
+		UserModel userModel = null;
+		userModel = userRepository.findByUsernameOrEmail(updateAuthority.getUsername_or_email(),
+				updateAuthority.getUsername_or_email());
+		
+		if(null == userModel)
+			return null;
+		else {
+			long uid = updateAuthority.getAuthorityID();
+			Optional<AuthorityModel> authorityModel = authorityRepository.findById(uid);
+			
+			AuthorityModel updateauthority = authorityModel.get();
+			userModel.setEnabled(updateAuthority.getEnabled());
+			userModel.setAuthorityModel(updateauthority);
+			
+			userRepository.save(userModel);
+			
+			return getUserResponseFromUserModel(userModel);
+		}
+			
+		
 	}
 
 	public void deleteUser(int id) {
