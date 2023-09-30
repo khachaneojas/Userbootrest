@@ -90,7 +90,6 @@ public class UserController {
 	@PutMapping("/updateuser")
 	public ResponseEntity<?> updateuser(@Valid @RequestBody UpdateUser user) {
 			return new ResponseEntity<>(userService.updateUser(user), HttpStatus.ACCEPTED);
-		
 	}
 	
 	@PutMapping("/updateauth")
