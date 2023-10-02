@@ -1,7 +1,11 @@
 package com.user.test.service;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +38,20 @@ public class UserService {
 		return (null == userModel) ? null
 				: UserResponse.builder().id(userModel.getId()).firstname(userModel.getFirstname())
 						.lastname(userModel.getLastname()).email(userModel.getEmail())
-						.username(userModel.getUsername()).authority(userModel.getAuthorityModel().getAuthority())
+						.username(userModel.getUsername()).authorities(userModel.getAuthorities())
 						.build();
+	}
+	
+	public<T extends Enum<T>>T stringToEnum(Class<T> enumClass,String str){
+		
+		try {
+			if(null==str || null == enumClass)
+				return null;
+			
+			return Enum.valueOf(enumClass, str);
+		}catch(IllegalArgumentException e) {
+			return null;
+		}
 	}
 
 	public List<UserResponse> getAllUsers() {
@@ -86,10 +102,20 @@ public class UserService {
 			return false;
 		
 		AuthorityModel defaultAuthority = authorityRepository.findByAuthority(Authority.Role_Default);
+//		AuthorityModel adminAuthority = authorityRepository.findByAuthority(Authority.Role_Admin);
+//		Set<AuthorityModel> defaultauthorities = new HashSet<>();
+//		defaultauthorities.add(defaultAuthority);
 
-		UserModel userModel = UserModel.builder().firstname(registerUser.getFirstname())
-				.lastname(registerUser.getLastname()).email(registerUser.getEmail())
-				.username(registerUser.getUsername()).password(registerUser.getPassword()).authorityModel(defaultAuthority).build();
+		UserModel userModel = UserModel.builder()
+				.firstname(registerUser.getFirstname())
+				.lastname(registerUser.getLastname())
+				.email(registerUser.getEmail())
+				.username(registerUser.getUsername())
+				.password(registerUser.getPassword())
+//				.authorities(defaultauthorities)
+				.authorities(Collections.singleton(defaultAuthority))
+//				.authorities(new HashSet<>(Arrays.asList(defaultAuthority, adminAuthority)))
+				.build();
 
 		try {
 			userRepository.save(userModel);
@@ -153,12 +179,13 @@ public class UserService {
 		if(null == userModel)
 			return null;
 		else {
-			long uid = updateAuthority.getAuthorityID();
-			Optional<AuthorityModel> authorityModel = authorityRepository.findById(uid);
-			
-			AuthorityModel updateauthority = authorityModel.get();
-			userModel.setEnabled(updateAuthority.getEnabled());
-			userModel.setAuthorityModel(updateauthority);
+//			long uid = updateAuthority.getAuthorityID();
+//			Set<> authority = updateAuthority.getAuthorities();
+//			Optional<AuthorityModel> authorityModel = Optional.of(authorityRepository.findByAuthority(authority));
+//			
+//			AuthorityModel updateauthority = authorityModel.get();
+//			userModel.setEnabled(updateAuthority.getEnabled());
+//			userModel.setAuthorities(authority);
 			
 			userRepository.save(userModel);
 			

@@ -1,13 +1,18 @@
 package com.user.test.model;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -45,8 +50,16 @@ public class UserModel {
 	@Column(nullable = false)
 	private String password;
 	
-	@ManyToOne
-	@JoinColumn(name = "authorityid")
-	private AuthorityModel authorityModel;
+//	@ManyToOne
+//	@JoinColumn(name = "authorityid")
+//	private AuthorityModel authorityModel;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+			name = "user_authority",
+			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "auth_name", referencedColumnName = "authority")
+			)
+	private Set<AuthorityModel> authorities = new HashSet<>();
 
 }
