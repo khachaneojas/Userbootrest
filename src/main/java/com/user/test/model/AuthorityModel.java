@@ -14,6 +14,9 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.user.test.enums.Authority;
 
 import lombok.AllArgsConstructor;
@@ -39,6 +42,7 @@ public class AuthorityModel {
 	@Column(name = "role")
 	private Authority authority;
 	
-	@ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)
-	private Set<UserModel> users = new HashSet<>();
+//	@JsonIgnore
+//	@ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)
+//	private Set<UserModel> users;
 }

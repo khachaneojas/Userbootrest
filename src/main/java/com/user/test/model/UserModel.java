@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +17,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,12 +58,13 @@ public class UserModel {
 //	@JoinColumn(name = "authorityid")
 //	private AuthorityModel authorityModel;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
+	@JsonIgnore
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(
 			name = "user_authority",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "auth_name", referencedColumnName = "authority")
+			inverseJoinColumns = @JoinColumn(name = "auth_name", referencedColumnName = "role")
 			)
-	private Set<AuthorityModel> authorities = new HashSet<>();
+	private Set<AuthorityModel> authorities;
 
 }

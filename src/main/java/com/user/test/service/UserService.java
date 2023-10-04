@@ -3,10 +3,13 @@ package com.user.test.service;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,9 +41,20 @@ public class UserService {
 		return (null == userModel) ? null
 				: UserResponse.builder().id(userModel.getId()).firstname(userModel.getFirstname())
 						.lastname(userModel.getLastname()).email(userModel.getEmail())
-						.username(userModel.getUsername()).authorities(userModel.getAuthorities())
+						.username(userModel.getUsername())
+						.authorities(
+								null != userModel.getAuthorities()
+								? userModel.getAuthorities()
+										.stream()
+										.map(authorityModel -> authorityModel.getAuthority().toString())
+										.collect(Collectors.toSet())
+								: null
+						)
 						.build();
 	}
+	
+	
+	
 	
 	public<T extends Enum<T>>T stringToEnum(Class<T> enumClass,String str){
 		
@@ -102,9 +116,9 @@ public class UserService {
 			return false;
 		
 		AuthorityModel defaultAuthority = authorityRepository.findByAuthority(Authority.Role_Default);
-//		AuthorityModel adminAuthority = authorityRepository.findByAuthority(Authority.Role_Admin);
-//		Set<AuthorityModel> defaultauthorities = new HashSet<>();
-//		defaultauthorities.add(defaultAuthority);
+//2		AuthorityModel adminAuthority = authorityRepository.findByAuthority(Authority.Role_Admin);
+//2		Set<AuthorityModel> defaultauthorities = new HashSet<>();
+//2		defaultauthorities.add(defaultAuthority);
 
 		UserModel userModel = UserModel.builder()
 				.firstname(registerUser.getFirstname())
@@ -112,10 +126,11 @@ public class UserService {
 				.email(registerUser.getEmail())
 				.username(registerUser.getUsername())
 				.password(registerUser.getPassword())
-//				.authorities(defaultauthorities)
+//2				.authorities(defaultauthorities)
 				.authorities(Collections.singleton(defaultAuthority))
-//				.authorities(new HashSet<>(Arrays.asList(defaultAuthority, adminAuthority)))
+//2				.authorities(new HashSet<>(Arrays.asList(defaultAuthority, adminAuthority)))
 				.build();
+
 
 		try {
 			userRepository.save(userModel);
@@ -180,12 +195,64 @@ public class UserService {
 			return null;
 		else {
 //			long uid = updateAuthority.getAuthorityID();
-//			Set<> authority = updateAuthority.getAuthorities();
-//			Optional<AuthorityModel> authorityModel = Optional.of(authorityRepository.findByAuthority(authority));
+			Set<String> setOfAuthorityString = updateAuthority.getAuthorities();
+			// 1. DEFAULT, 2. XYZ, 3. ADMIN
+			
+			Set<AuthorityModel> setOfAuthorityModel = setOfAuthorityString
+					.stream()
+					.map(authorityString -> {
+						
+						Authority authority = stringToEnum(Authority.class, authorityString);
+						if (null == authority)
+							throw new InvalidDataException("Invalid Data");
+						
+						return authorityRepository.findByAuthority(authority);
+					})
+					.filter(Objects::nonNull)
+					.collect(Collectors.toSet());
+			
+			
+//			Set<AuthorityModel> setOfAuthorityModel = setOfAuthorityString
+//			.stream()
+//			.map(authorityString -> {
+//				
+//				Authority authority = stringToEnum(Authority.class, authorityString);
+//				if (null == authority)
+//					throw new InvalidDataException("Invalid Data");
+//				
+//				AuthorityModel authorityModel = authorityRepository.findByAuthority(authority);
+//				if (null == authorityModel)
+//					throw new InvalidDataException("Invalid Data");
+//				
+//				return authorityModel;
+//			})
+//			.collect(Collectors.toSet());
+			
+			
+			
+			
+//			Set<AuthorityModel> setOfAuthorityModel = new HashSet<>();
 //			
+//			for (String authorityString : setOfAuthorityString) {
+//				
+//				Authority authority = stringToEnum(Authority.class, authorityString);
+//				if (null == authority)
+//					throw new InvalidDataException("Invalid Data");
+//				
+//				AuthorityModel authorityModel = authorityRepository.findByAuthority(authority);
+//				if (null == authorityModel)
+//					throw new InvalidDataException("Invalid Data");
+//				
+//				setOfAuthorityModel.add(authorityModel);		
+//			}
+			
+			
+			
+//			AuthorityModel authorityModel = authority.stream().map.(authorityRepository.findByAuthority(this);
+			
 //			AuthorityModel updateauthority = authorityModel.get();
-//			userModel.setEnabled(updateAuthority.getEnabled());
-//			userModel.setAuthorities(authority);
+			userModel.setEnabled(updateAuthority.getEnabled());
+			userModel.setAuthorities(setOfAuthorityModel);
 			
 			userRepository.save(userModel);
 			

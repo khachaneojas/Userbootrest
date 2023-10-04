@@ -20,6 +20,6 @@ public class UserResponse {
 	private String lastname;
 	private String email;
 	private String username;
-	private Set<AuthorityModel> authorities;
+	private Set<String> authorities;
 
 }
