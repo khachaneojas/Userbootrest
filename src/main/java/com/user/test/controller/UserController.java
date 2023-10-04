@@ -7,6 +7,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,19 +18,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.user.test.model.UserModel;
+import com.user.test.payload.AuthRequest;
 import com.user.test.payload.LoginRequest;
 import com.user.test.payload.RegisterUser;
 import com.user.test.payload.UpdateAuthority;
 import com.user.test.payload.UpdateUser;
 import com.user.test.response.UserResponse;
 import com.user.test.service.UserService;
+import com.user.test.util.JwtUtil;
 
 @RestController
 public class UserController {
-
+	
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private JwtUtil jwtUtil;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
 	@GetMapping("/users")
 	public ResponseEntity<?> getallUser() {
 		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
@@ -101,5 +111,17 @@ public class UserController {
 				return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
 		else 
 			return new ResponseEntity<>(userResponse, HttpStatus.ACCEPTED);
+	}
+	
+	@PostMapping("/authenticate")
+	public String generateToken(@RequestBody AuthRequest authRequest) throws Exception{
+		try {
+			authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
+					);
+		}catch(Exception e) {
+			throw new Exception("Invalid Username/Password");
+		}
+		return jwtUtil.generateToken(authRequest.getUserName());
 	}
 }
