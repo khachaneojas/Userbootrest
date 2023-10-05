@@ -53,9 +53,6 @@ public class UserService {
 						.build();
 	}
 	
-	
-	
-	
 	public<T extends Enum<T>>T stringToEnum(Class<T> enumClass,String str){
 		
 		try {
