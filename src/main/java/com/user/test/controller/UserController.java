@@ -7,8 +7,11 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.user.test.enums.Authority;
 import com.user.test.model.UserModel;
 import com.user.test.payload.AuthRequest;
 import com.user.test.payload.LoginRequest;
@@ -39,7 +43,10 @@ public class UserController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
+	
 	@GetMapping("/users")
+	@Secured("Role_Admin")
+//	@PreAuthorize("hasAuthority('Role_Admin')")
 	public ResponseEntity<?> getallUser() {
 		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
 	}

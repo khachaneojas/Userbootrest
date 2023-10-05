@@ -11,10 +11,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.user.test.enums.Authority;
 import com.user.test.filter.JwtFilter;
 import com.user.test.service.CustomUserDetailsService;
 
@@ -50,7 +52,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http
 			.csrf().disable()
-			.authorizeRequests().antMatchers("/authenticate", "/register").permitAll()
+			.authorizeRequests().antMatchers("/authenticate", "/register", "/login").permitAll()
+			//.antMatchers("/")
+			.antMatchers("/users").hasRole(Authority.Role_Admin.name())
 			.anyRequest().authenticated()
 			.and()
 			.exceptionHandling()
@@ -62,6 +66,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 	
-	
+//	@Bean
+//	public BCryptPasswordEncoder passwordEncoder1() {
+//		return new BCryptPasswordEncoder();
+//	}
 
 }

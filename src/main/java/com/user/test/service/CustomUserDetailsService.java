@@ -1,6 +1,7 @@
 package com.user.test.service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -23,6 +24,8 @@ public class CustomUserDetailsService implements UserDetailsService{
 		UserModel userModel = userRepository.findByUsername(username);
 		
 		return new User(userModel.getUsername(),userModel.getPassword(), new ArrayList<>());
+		
+		//return userModel.map(CustomUserDetails :: new).orElseThrow(()-> new UsernameNotFoundException(username+" doesn't exist in system"));
 	}
 
 }

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.user.test.enums.Authority;
@@ -35,6 +36,9 @@ public class UserService {
 	
 	@Autowired
 	AuthorityRepository authorityRepository;
+	
+//	@Autowired
+//	private BCryptPasswordEncoder passwordEncoder1;
 
 	private UserResponse getUserResponseFromUserModel(UserModel userModel) {
 
@@ -108,7 +112,7 @@ public class UserService {
 
 		Boolean isEmailAlreadyExist = userRepository.existsByEmail(registerUser.getEmail());
 		Boolean isUsernameAlreadyExist = userRepository.existsByUsername(registerUser.getUsername());
-
+		
 		if (Boolean.TRUE.equals(isEmailAlreadyExist) || Boolean.TRUE.equals(isUsernameAlreadyExist))
 			return false;
 		
@@ -116,7 +120,9 @@ public class UserService {
 //2		AuthorityModel adminAuthority = authorityRepository.findByAuthority(Authority.Role_Admin);
 //2		Set<AuthorityModel> defaultauthorities = new HashSet<>();
 //2		defaultauthorities.add(defaultAuthority);
-
+		
+//		String encryptedPwd = passwordEncoder1.encode(registerUser.getPassword());
+		
 		UserModel userModel = UserModel.builder()
 				.firstname(registerUser.getFirstname())
 				.lastname(registerUser.getLastname())
