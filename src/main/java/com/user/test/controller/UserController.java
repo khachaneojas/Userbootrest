@@ -45,8 +45,8 @@ public class UserController {
 	
 	
 	@GetMapping("/users")
-	@Secured("Role_Admin")
-//	@PreAuthorize("hasAuthority('Role_Admin')")
+//	@Secured({"Role_Admin"})
+	@PreAuthorize("hasAuthority('Role_Admin')")
 	public ResponseEntity<?> getallUser() {
 		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
 	}

@@ -1,12 +1,16 @@
 package com.user.test.util;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import com.user.test.enums.Authority;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,10 +20,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtUtil {
 
 	//requirement :
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+    public static final long JWT_TOKEN_VALIDITY = 86400000;
 
     //    public static final long JWT_TOKEN_VALIDITY =  60;
-    private String secret = "afafasfafafasfasfasfafacasdasfasxASFACASDFACASDFASFASFDAFASFASDAADSCSDFADCVSGCFVADXCcadwavfsfarvf";
+    @Value("${app.jwt.secret}")
+    private String secret;
 
     //retrieve username from jwt token
     public String getUsernameFromToken(String token) {
@@ -50,6 +55,13 @@ public class JwtUtil {
     //generate token for user
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
+//        claims.put(
+//        		"halo",
+//        		Arrays.asList(
+//        				Authority.Role_Default.toString(),
+//        				Authority.Role_Admin.toString()
+//				)
+//		);
         return doGenerateToken(claims, username);
     }
 
@@ -60,8 +72,11 @@ public class JwtUtil {
     //   compaction of the JWT to a URL-safe string
     private String doGenerateToken(Map<String, Object> claims, String subject) {
 
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+        return Jwts.builder()
+        		.setClaims(claims)
+        		.setSubject(subject)
+        		.setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
