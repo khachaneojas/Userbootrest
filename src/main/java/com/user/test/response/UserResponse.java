@@ -15,7 +15,7 @@ import lombok.Data;
 @Builder
 public class UserResponse {
 	
-	private int id;
+	private Integer id;
 	private String firstname;
 	private String lastname;
 	private String email;

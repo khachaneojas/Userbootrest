@@ -7,26 +7,33 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.user.test.enums.Authority;
 import com.user.test.exception.AccountDisabledException;
 import com.user.test.exception.InvalidDataException;
+import com.user.test.exception.UnauthorizedAccessException;
 import com.user.test.model.AuthorityModel;
 import com.user.test.model.UserModel;
+import com.user.test.payload.AuthRequest;
 import com.user.test.payload.LoginRequest;
 import com.user.test.payload.RegisterUser;
 import com.user.test.payload.UpdateAuthority;
 import com.user.test.payload.UpdateUser;
 import com.user.test.repository.AuthorityRepository;
 import com.user.test.repository.UserRepository;
+import com.user.test.response.TokenValidationResponse;
 import com.user.test.response.UserResponse;
+import com.user.test.util.JwtUtil;
 
 @Service
 public class UserService {
@@ -36,6 +43,9 @@ public class UserService {
 	
 	@Autowired
 	AuthorityRepository authorityRepository;
+	
+	@Autowired
+	JwtUtil jwtUtil;
 	
 //	@Autowired
 //	private BCryptPasswordEncoder passwordEncoder1;
@@ -78,13 +88,14 @@ public class UserService {
 	}
 
 	public UserResponse getUserById(int id) {
+		
 		UserModel user = null;
 		try {
 			user = this.userRepository.findById(id);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return getUserResponseFromUserModel(user);
 	}
 
@@ -268,4 +279,52 @@ public class UserService {
 	public void deleteUser(int id) {
 		userRepository.deleteById(id);
 	}
+
+	public TokenValidationResponse isTokenValid(String str) {
+		
+		Integer userId = jwtUtil.getUserIdfromJwt(str);
+		
+		TokenValidationResponse tokenValidationResponse = new TokenValidationResponse();
+		tokenValidationResponse.setUserId(userId);
+
+			Optional<UserModel> userModel = userRepository.findById(userId);
+				if(userModel.isPresent()) {
+					
+					if(userModel.get().isEnabled()) {
+						
+						Set<String> auth = userModel.get()
+								.getAuthorities()
+								.stream()
+								.map(authorityModel -> authorityModel.getAuthority().toString())
+								.collect(Collectors.toSet());
+						
+
+							tokenValidationResponse.setAdmin(auth.contains("Role_Admin"));
+							tokenValidationResponse.setSales(auth.contains("Role_Sales"));
+							tokenValidationResponse.setDefault(auth.contains("Role_Default"));
+						
+							return tokenValidationResponse;
+					}
+					
+				}
+				throw new InvalidDataException("Contact administrator, account is not active ");
+		}
+	
+	public String generateToken(AuthRequest authRequest) {
+		
+		UserModel userModel = userRepository.findByUsername(authRequest.getUsername());
+		
+			if(userModel != null) {
+				if(userModel.getPassword().equals(authRequest.getPassword())) {
+					return jwtUtil.generateToken(userModel.getId());
+				}
+				else {
+					throw new InvalidDataException("Incorrect Password ");
+				}
+			}else {
+				throw new InvalidDataException("User not found with username "+authRequest.getUsername());
+		}
+
+	}
+	
 }

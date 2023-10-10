@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.user.test.enums.Authority;
-import com.user.test.filter.JwtFilter;
 import com.user.test.service.CustomUserDetailsService;
 
 @Configuration
@@ -28,9 +27,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	CustomUserDetailsService userDetailsService;
 
-	@Autowired
-	private JwtFilter jwtFilter;
-
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService);
@@ -38,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return NoOpPasswordEncoder.getInstance();
+		return new BCryptPasswordEncoder();
 	}
 
 	@Bean(name = BeanIds.AUTHENTICATION_MANAGER)
@@ -53,23 +49,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http
 			.cors().disable()
 			.csrf().disable()
-			.authorizeHttpRequests()
-			.antMatchers("/authenticate", "/register", "/login").permitAll()
-//			.antMatchers("/users").hasAuthority("Role_Admin")
-			.anyRequest().authenticated()
-			.and()
-			.exceptionHandling()
-			.and()
 			.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		
-		http
-			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 	}
+
 	
-//	@Bean
-//	public BCryptPasswordEncoder passwordEncoder1() {
-//		return new BCryptPasswordEncoder();
-//	}
 
 }

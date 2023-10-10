@@ -6,12 +6,16 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.user.test.exception.AccountDisabledException;
 import com.user.test.exception.InvalidDataException;
+import com.user.test.exception.UnauthorizedAccessException;
+
+import io.jsonwebtoken.JwtException;
 
 
 @RestControllerAdvice
@@ -36,6 +40,23 @@ public class ApplicationExceptionHandler {
 		return errorMap;
 	}
 	
+	
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	@ExceptionHandler(MissingRequestHeaderException.class)
+	public Map<String, String> handleMissingRequestHeaderException(MissingRequestHeaderException ex){
+		Map<String, String> errorMap = new HashMap<String, String>();
+		errorMap.put("error", ex.getMessage());
+		return errorMap;
+	}
+	
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	@ExceptionHandler(JwtException.class)
+	public Map<String, String> handleJwtException(JwtException ex){
+		Map<String, String> errorMap = new HashMap<String, String>();
+		errorMap.put("error", ex.getMessage());
+		return errorMap;
+	}
+	
 //Custom Exception
 	@ResponseStatus(HttpStatus.FORBIDDEN)
 	@ExceptionHandler(AccountDisabledException.class)
@@ -45,7 +66,17 @@ public class ApplicationExceptionHandler {
 		return errorMap;
 	}
 	
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(InvalidDataException.class)
 	public Map<String, String> handleInvalidDataException(InvalidDataException ex){
+		Map<String, String> errorMap = new HashMap<String, String>();
+		errorMap.put("error", ex.getMessage());
+		return errorMap;
+	}
+	
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	@ExceptionHandler(UnauthorizedAccessException.class)
+	public Map<String, String> handleUnauthorizedAccessException(UnauthorizedAccessException ex){
 		Map<String, String> errorMap = new HashMap<String, String>();
 		errorMap.put("error", ex.getMessage());
 		return errorMap;
