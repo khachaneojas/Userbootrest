@@ -22,6 +22,7 @@ import com.user.test.enums.Authority;
 import com.user.test.exception.AccountDisabledException;
 import com.user.test.exception.InvalidDataException;
 import com.user.test.exception.UnauthorizedAccessException;
+import com.user.test.exception.UserNotFoundException;
 import com.user.test.model.AuthorityModel;
 import com.user.test.model.UserModel;
 import com.user.test.payload.AuthRequest;
@@ -79,24 +80,54 @@ public class UserService {
 		}
 	}
 
-	public List<UserResponse> getAllUsers() {
+	public List<UserResponse> getAllUsers(String str) {
+		TokenValidationResponse tokenValidationResponse = isTokenValid(str);
+		
+		if(!tokenValidationResponse.isAdmin())
+			throw new UnauthorizedAccessException("You dont have access to this endpoint");
+		
 		List<UserModel> listOfUserModels = userRepository.findAll();
 		if (listOfUserModels.isEmpty())
 			throw new RuntimeException("There are no users in the db.");
 
-		return listOfUserModels.stream().map(this::getUserResponseFromUserModel).collect(Collectors.toList());
+		return listOfUserModels
+				.stream()
+				.map(this::getUserResponseFromUserModel)
+				.collect(Collectors.toList());
+		
 	}
 
-	public UserResponse getUserById(int id) {
+	public UserResponse getUserById(String str, int id) {
 		
-		UserModel user = null;
-		try {
-			user = this.userRepository.findById(id);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		TokenValidationResponse tokenValidationResponse = isTokenValid(str);
+		
+		boolean isNone = !tokenValidationResponse.isDefault() &&
+				!tokenValidationResponse.isAdmin() &&
+				!tokenValidationResponse.isSales();
+		if(
+				isNone ||
+				!tokenValidationResponse.isAdmin() &&
+				id != tokenValidationResponse.getUserId()
+		)
+			throw new UnauthorizedAccessException("You dont have access for userid " + id);
+		
+		UserModel user = userRepository.findById(id);
+		if (null == user)
+			throw new UserNotFoundException("Invalid user Id " + id);
+		
 		return getUserResponseFromUserModel(user);
+		
+//		if (!tokenValidationResponse.isAdmin()) {
+//			
+//			if(id == tokenValidationResponse.getUserId()) 
+//				return getUserResponseFromUserModel(user);
+//			else
+//				throw new UnauthorizedAccessException("You dont have access for userid " + id);
+//		}
+		
+//		if(tokenValidationResponse.isAdmin()) 
+//			return getUserResponseFromUserModel(user);
+		
 	}
 
 	public UserResponse getUserByUsername(String username) {
@@ -325,6 +356,23 @@ public class UserService {
 				throw new InvalidDataException("User not found with username "+authRequest.getUsername());
 		}
 
+	}
+
+	public UserResponse getUserResponseByUserId(TokenValidationResponse validationResponse, Integer userid) {
+		
+		if(
+				validationResponse.isNone() ||
+				(!validationResponse.isAdmin() && validationResponse.getUserId() != userid)
+		)
+			throw new UnauthorizedAccessException("You have no access");
+		
+		Optional<UserModel> user = userRepository.findById(userid);
+		if (user.isEmpty())
+			throw new UserNotFoundException("Invalid user Id " + userid);
+		
+		return getUserResponseFromUserModel(user.get());
+		
+			
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
@@ -77,6 +78,14 @@ public class ApplicationExceptionHandler {
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ExceptionHandler(UnauthorizedAccessException.class)
 	public Map<String, String> handleUnauthorizedAccessException(UnauthorizedAccessException ex){
+		Map<String, String> errorMap = new HashMap<String, String>();
+		errorMap.put("error", ex.getMessage());
+		return errorMap;
+	}
+	
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ExceptionHandler(UsernameNotFoundException.class)
+	public Map<String, String> handleUsernameNotFoundException(UsernameNotFoundException ex){
 		Map<String, String> errorMap = new HashMap<String, String>();
 		errorMap.put("error", ex.getMessage());
 		return errorMap;

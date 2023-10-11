@@ -48,37 +48,25 @@ public class UserController {
 	private JwtUtil jwtUtil;
 	
 	@Autowired
-	private AuthenticationManager authenticationManager;
-	
-	@Autowired
 	private UserRepository userRepository;
 	
 	@GetMapping("/users")
 //	@Secured({"Role_Admin"})
 //	@PreAuthorize("hasAuthority('Role_Admin')")
 	public ResponseEntity<?> getallUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String str){
-
-		TokenValidationResponse tokenValidationResponse = userService.isTokenValid(str);
-		
-		if(!tokenValidationResponse.isAdmin())
-			throw new UnauthorizedAccessException("You dont have access to this endpoint");
-			
-		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
-
+		return new ResponseEntity<>(userService.getAllUsers(str), HttpStatus.OK);
 	}
 
 	@GetMapping("/userbyid/{id}")
 	public ResponseEntity<?> getuserbyid(@RequestHeader(HttpHeaders.AUTHORIZATION) String str,@PathVariable("id") int id){
 
-		TokenValidationResponse tokenValidationResponse = userService.isTokenValid(str);
-		
-		if(!tokenValidationResponse.isAdmin() || !tokenValidationResponse.isDefault())
-			throw new UnauthorizedAccessException("You dont have access to this endpoint");
-		
-//		return (null == userService.getUserById(id))
-//				? new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND)
-//				: new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);		
-		return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);	
+			return new ResponseEntity<>(userService.getUserById(str, id), HttpStatus.OK);		
+	}
+	
+	
+	public ResponseEntity<?> getUserIdTest(@PathVariable("userId") Integer userid, TokenValidationResponse validationResponse){
+		System.out.println("Inside Executed");
+		return new ResponseEntity<>(userService.getUserResponseByUserId(validationResponse, userid), HttpStatus.OK);
 	}
 
 	@GetMapping("/userbyname/{username}")
