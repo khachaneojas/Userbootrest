@@ -1,19 +1,11 @@
 package com.user.test.controller;
 
-import java.util.Optional;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,10 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.user.test.annotation.Auditor;
 import com.user.test.enums.Authority;
-import com.user.test.exception.InvalidDataException;
-import com.user.test.exception.UnauthorizedAccessException;
-import com.user.test.model.UserModel;
 import com.user.test.payload.AuthRequest;
 import com.user.test.payload.LoginRequest;
 import com.user.test.payload.RegisterUser;
@@ -48,7 +38,7 @@ public class UserController {
 	private JwtUtil jwtUtil;
 	
 	@Autowired
-	private UserRepository userRepository;
+	private UserRepository userRepository; 
 	
 	@GetMapping("/users")
 //	@Secured({"Role_Admin"})
@@ -63,7 +53,8 @@ public class UserController {
 			return new ResponseEntity<>(userService.getUserById(str, id), HttpStatus.OK);		
 	}
 	
-	
+	@GetMapping("/usertest/{userId}")
+	@Auditor(validate = true, allowedRoles = Authority.Role_Admin)
 	public ResponseEntity<?> getUserIdTest(@PathVariable("userId") Integer userid, TokenValidationResponse validationResponse){
 		System.out.println("Inside Executed");
 		return new ResponseEntity<>(userService.getUserResponseByUserId(validationResponse, userid), HttpStatus.OK);

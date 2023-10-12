@@ -2,6 +2,7 @@ package com.user.test.service;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -341,6 +342,43 @@ public class UserService {
 				throw new InvalidDataException("Contact administrator, account is not active ");
 		}
 	
+public TokenValidationResponse isTokenValidTest(Authority[] authorities, String str) {
+		Integer userId = jwtUtil.getUserIdfromJwt(str);
+		
+		TokenValidationResponse tokenValidationResponse = new TokenValidationResponse();
+		tokenValidationResponse.setUserId(userId);
+
+			Optional<UserModel> userModel = userRepository.findById(userId);
+				if(userModel.isPresent()) {
+					
+						Set<String> auth = userModel.get()
+								.getAuthorities()
+								.stream()
+								.map(authorityModel -> authorityModel.getAuthority().toString())
+								.collect(Collectors.toSet());
+						
+						if(userModel.get().isEnabled()) {
+							
+							EnumSet<Authority> authorize = EnumSet.copyOf(Arrays.asList(authorities));
+							
+							 boolean authorized = auth
+									.stream()
+									.anyMatch(value->authorize
+											.contains(Authority.valueOf(value)));
+							
+						if(authorized) {
+							tokenValidationResponse.setAdmin(auth.contains("Role_Admin"));
+							tokenValidationResponse.setSales(auth.contains("Role_Sales"));
+							tokenValidationResponse.setDefault(auth.contains("Role_Default"));
+						
+							return tokenValidationResponse;
+							}
+					}
+						throw new InvalidDataException("Contact administrator, account is not active ");
+				}
+				throw new UserNotFoundException("User not present with user id "+userId);		
+	}
+
 	public String generateToken(AuthRequest authRequest) {
 		
 		UserModel userModel = userRepository.findByUsername(authRequest.getUsername());
