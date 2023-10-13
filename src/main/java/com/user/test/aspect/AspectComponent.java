@@ -40,7 +40,9 @@ public class AspectComponent {
 		System.out.println(Arrays.asList(authorities));
 		System.out.println(auditor.validate());
 		
-		if(auditor.validate()) {
+		if(!auditor.validate())
+			throw new UnauthorizedAccessException("You are not validated");
+		
 		ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		if(null == requestAttributes)
 			throw new InvalidDataException("No request in the context");
@@ -66,9 +68,6 @@ public class AspectComponent {
 				break;
 			}
 			}
-		}
-		else 
-			throw new UnauthorizedAccessException("You are not validated");
 	}
 	
 //	@After(value = "executing(* com.user.test.controller.UserController.getUserIdTest(..))")

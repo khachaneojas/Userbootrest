@@ -176,8 +176,7 @@ public class UserService {
 				.authorities(Collections.singleton(defaultAuthority))
 //2				.authorities(new HashSet<>(Arrays.asList(defaultAuthority, adminAuthority)))
 				.build();
-
-
+		
 		try {
 			userRepository.save(userModel);
 			return true;
@@ -257,7 +256,6 @@ public class UserService {
 					.filter(Objects::nonNull)
 					.collect(Collectors.toSet());
 			
-			
 //			Set<AuthorityModel> setOfAuthorityModel = setOfAuthorityString
 //			.stream()
 //			.map(authorityString -> {
@@ -274,9 +272,6 @@ public class UserService {
 //			})
 //			.collect(Collectors.toSet());
 			
-			
-			
-			
 //			Set<AuthorityModel> setOfAuthorityModel = new HashSet<>();
 //			
 //			for (String authorityString : setOfAuthorityString) {
@@ -292,8 +287,6 @@ public class UserService {
 //				setOfAuthorityModel.add(authorityModel);		
 //			}
 			
-			
-			
 //			AuthorityModel authorityModel = authority.stream().map.(authorityRepository.findByAuthority(this);
 			
 //			AuthorityModel updateauthority = authorityModel.get();
@@ -304,8 +297,6 @@ public class UserService {
 			
 			return getUserResponseFromUserModel(userModel);
 		}
-			
-		
 	}
 
 	public void deleteUser(int id) {
@@ -337,46 +328,50 @@ public class UserService {
 						
 							return tokenValidationResponse;
 					}
-					
 				}
-				throw new InvalidDataException("Contact administrator, account is not active ");
+					throw new InvalidDataException("Contact administrator, account is not active ");
+				
 		}
 	
-public TokenValidationResponse isTokenValidTest(Authority[] authorities, String str) {
+	public TokenValidationResponse isTokenValidTest(Authority[] authorities, String str) {
+	
+		// ID FROM TOKEN
 		Integer userId = jwtUtil.getUserIdfromJwt(str);
 		
-		TokenValidationResponse tokenValidationResponse = new TokenValidationResponse();
-		tokenValidationResponse.setUserId(userId);
-
-			Optional<UserModel> userModel = userRepository.findById(userId);
-				if(userModel.isPresent()) {
-					
-						Set<String> auth = userModel.get()
-								.getAuthorities()
-								.stream()
-								.map(authorityModel -> authorityModel.getAuthority().toString())
-								.collect(Collectors.toSet());
-						
-						if(userModel.get().isEnabled()) {
-							
-							EnumSet<Authority> authorize = EnumSet.copyOf(Arrays.asList(authorities));
-							
-							 boolean authorized = auth
-									.stream()
-									.anyMatch(value->authorize
-											.contains(Authority.valueOf(value)));
-							
-						if(authorized) {
-							tokenValidationResponse.setAdmin(auth.contains("Role_Admin"));
-							tokenValidationResponse.setSales(auth.contains("Role_Sales"));
-							tokenValidationResponse.setDefault(auth.contains("Role_Default"));
-						
-							return tokenValidationResponse;
-							}
-					}
-						throw new InvalidDataException("Contact administrator, account is not active ");
-				}
-				throw new UserNotFoundException("User not present with user id "+userId);		
+		// CHECKING IF IT EXIST IN THE DB
+		Optional<UserModel> userOptional = userRepository.findById(userId);
+		if (userOptional.isEmpty())
+			throw new UserNotFoundException("User not present with user id "+userId);
+		
+		// IF IT'S DISABLED
+		UserModel userModel = userOptional.get();
+		if (!userModel.isEnabled())
+			throw new InvalidDataException("Contact administrator, account is not active ");
+			
+		// GETTING USER AUTHORITIES
+		Set<Authority> userAuthorities = userModel.getAuthorities()
+				.stream()
+				.map(authorityModel -> authorityModel.getAuthority())
+				.collect(Collectors.toSet());
+		
+		EnumSet<Authority> allowedAuthorities = EnumSet.copyOf(Arrays.asList(authorities));
+		
+		boolean isAllowed = userAuthorities
+				.stream()
+				.anyMatch(authority -> 
+					allowedAuthorities.contains(authority)
+				);
+		
+		if (!isAllowed)
+			throw new UnauthorizedAccessException("You have no access .. ");
+		
+		return TokenValidationResponse.builder()
+				.userId(userId)
+				.isDefault(userAuthorities.contains(Authority.Role_Default))
+				.isAdmin(userAuthorities.contains(Authority.Role_Admin))
+				.isSales(userAuthorities.contains(Authority.Role_Sales))
+				.isNone(userAuthorities.isEmpty())
+				.build();
 	}
 
 	public String generateToken(AuthRequest authRequest) {
@@ -410,7 +405,6 @@ public TokenValidationResponse isTokenValidTest(Authority[] authorities, String 
 		
 		return getUserResponseFromUserModel(user.get());
 		
-			
 	}
 	
 }
