@@ -334,7 +334,7 @@ public class UserService {
 		}
 	
 	public TokenValidationResponse isTokenValidTest(Authority[] authorities, String str) {
-	
+
 		// ID FROM TOKEN
 		Integer userId = jwtUtil.getUserIdfromJwt(str);
 		

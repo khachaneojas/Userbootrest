@@ -1,0 +1,12 @@
+2023-10-17 18:06:32 [restartedMain] INFO  c.u.test.UserbootprojectApplication - Starting UserbootprojectApplication using Java 17.0.8 on LAPTOP-16 with PID 18488 (C:\Users\dev7\Desktop\myfiles\GitHub\khachaneojas\Userbootrest\Userbootrest\target\classes started by dev7 in C:\Users\dev7\Desktop\myfiles\GitHub\khachaneojas\Userbootrest\Userbootrest)
+2023-10-17 18:06:32 [restartedMain] DEBUG c.u.test.UserbootprojectApplication - Running with Spring Boot v2.7.12, Spring v5.3.27
+2023-10-17 18:06:32 [restartedMain] INFO  c.u.test.UserbootprojectApplication - No active profile set, falling back to 1 default profile: "default"
+2023-10-17 18:06:46 [restartedMain] INFO  c.u.test.UserbootprojectApplication - Started UserbootprojectApplication in 14.556 seconds (JVM running for 16.405)
+2023-10-17 18:07:25 [restartedMain] INFO  c.u.test.UserbootprojectApplication - Starting UserbootprojectApplication using Java 17.0.8 on LAPTOP-16 with PID 3360 (C:\Users\dev7\Desktop\myfiles\GitHub\khachaneojas\Userbootrest\Userbootrest\target\classes started by dev7 in C:\Users\dev7\Desktop\myfiles\GitHub\khachaneojas\Userbootrest\Userbootrest)
+2023-10-17 18:07:25 [restartedMain] DEBUG c.u.test.UserbootprojectApplication - Running with Spring Boot v2.7.12, Spring v5.3.27
+2023-10-17 18:07:25 [restartedMain] INFO  c.u.test.UserbootprojectApplication - No active profile set, falling back to 1 default profile: "default"
+2023-10-17 18:07:38 [restartedMain] INFO  c.u.test.UserbootprojectApplication - Started UserbootprojectApplication in 13.709 seconds (JVM running for 15.505)
+2023-10-17 18:12:34 [restartedMain] INFO  c.u.test.UserbootprojectApplication - Starting UserbootprojectApplication using Java 17.0.8 on LAPTOP-16 with PID 13620 (C:\Users\dev7\Desktop\myfiles\GitHub\khachaneojas\Userbootrest\Userbootrest\target\classes started by dev7 in C:\Users\dev7\Desktop\myfiles\GitHub\khachaneojas\Userbootrest\Userbootrest)
+2023-10-17 18:12:34 [restartedMain] DEBUG c.u.test.UserbootprojectApplication - Running with Spring Boot v2.7.12, Spring v5.3.27
+2023-10-17 18:12:34 [restartedMain] INFO  c.u.test.UserbootprojectApplication - No active profile set, falling back to 1 default profile: "default"
+2023-10-17 18:12:45 [restartedMain] INFO  c.u.test.UserbootprojectApplication - Started UserbootprojectApplication in 12.069 seconds (JVM running for 13.889)

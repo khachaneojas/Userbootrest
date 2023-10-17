@@ -23,6 +23,8 @@ import com.user.test.response.UserResponse;
 import com.user.test.service.UserService;
 import com.user.test.util.JwtUtil;
 
+import java.util.Arrays;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -43,6 +45,7 @@ public class UserController {
 //	@PreAuthorize("hasAuthority('Role_Admin')")
 	public ResponseEntity<?> getallUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String str){
 		log.info("ABC");
+		log.error("ERROR1");
 		return new ResponseEntity<>(userService.getAllUsers(str), HttpStatus.OK);
 	}
 
@@ -123,5 +126,13 @@ public class UserController {
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> generateToken(@RequestBody AuthRequest authRequest) throws Exception{
 		return new ResponseEntity<>(userService.generateToken(authRequest), HttpStatus.CREATED);
-	}	
+	}
+
+	@PostMapping("/tokenValid")
+	public ResponseEntity<?> isTokenValid(@RequestBody Authority[] authorities, @RequestHeader(HttpHeaders.AUTHORIZATION) String str){
+		System.out.println(Arrays.asList(authorities));
+		return new ResponseEntity<>(userService.isTokenValidTest(authorities, str), HttpStatus.OK);
+	}
+
+
 }
