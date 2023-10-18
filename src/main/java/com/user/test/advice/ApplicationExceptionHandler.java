@@ -75,7 +75,7 @@ public class ApplicationExceptionHandler {
 		return errorMap;
 	}
 	
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
 	@ExceptionHandler(UnauthorizedAccessException.class)
 	public Map<String, String> handleUnauthorizedAccessException(UnauthorizedAccessException ex){
 		Map<String, String> errorMap = new HashMap<String, String>();
