@@ -55,14 +55,15 @@
     </appender>
 
     <!-- Send logs to both console and file audit -->
-    <logger name="com.user.test" level="debug"
-            additivity="false">
+    <logger name="com.user.test" level="debug" additivity="false">
         <appender-ref ref="FILE-AUDIT" />
-        <appender-ref ref="STDOUT" />
     </logger>
 
     <root level="error">
         <appender-ref ref="FILE-ERROR" />
+    </root>
+    <root level="info">
+        <appender-ref ref="STDOUT" />
     </root>
 
 </configuration>
