@@ -13,7 +13,7 @@
 
     <appender name="FILE-AUDIT"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${DEV_HOME}/debug.log</file>
+        <file>${DEV_HOME}/info.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
                 %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
@@ -55,13 +55,13 @@
     </appender>
 
     <!-- Send logs to both console and file audit -->
-    <logger name="com.user.test" level="debug" additivity="false">
+    <logger name="com.user.test" level="info" additivity="false">
         <appender-ref ref="FILE-AUDIT" />
     </logger>
 
-    <root level="error">
+    <logger name="com.user.test" level="trace" additivity="false">
         <appender-ref ref="FILE-ERROR" />
-    </root>
+    </logger>
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>

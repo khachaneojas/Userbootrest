@@ -1,0 +1,7 @@
+2023-10-19 13:48:33 [restartedMain] INFO  c.u.test.UserbootprojectApplication - Starting UserbootprojectApplication using Java 17.0.8 on LAPTOP-16 with PID 4712 (C:\Users\dev7\Desktop\myfiles\GitHub\khachaneojas\Userbootrest\Userbootrest\target\classes started by dev7 in C:\Users\dev7\Desktop\myfiles\GitHub\khachaneojas\Userbootrest\Userbootrest)
+2023-10-19 13:48:33 [restartedMain] INFO  c.u.test.UserbootprojectApplication - No active profile set, falling back to 1 default profile: "default"
+2023-10-19 13:48:45 [restartedMain] INFO  c.u.test.UserbootprojectApplication - Started UserbootprojectApplication in 13.669 seconds (JVM running for 15.736)
+2023-10-19 13:50:28 [restartedMain] INFO  c.u.test.UserbootprojectApplication - Starting UserbootprojectApplication using Java 17.0.8 on LAPTOP-16 with PID 20596 (C:\Users\dev7\Desktop\myfiles\GitHub\khachaneojas\Userbootrest\Userbootrest\target\classes started by dev7 in C:\Users\dev7\Desktop\myfiles\GitHub\khachaneojas\Userbootrest\Userbootrest)
+2023-10-19 13:50:28 [restartedMain] DEBUG c.u.test.UserbootprojectApplication - Running with Spring Boot v2.7.12, Spring v5.3.27
+2023-10-19 13:50:28 [restartedMain] INFO  c.u.test.UserbootprojectApplication - No active profile set, falling back to 1 default profile: "default"
+2023-10-19 13:50:41 [restartedMain] INFO  c.u.test.UserbootprojectApplication - Started UserbootprojectApplication in 13.346 seconds (JVM running for 15.043)

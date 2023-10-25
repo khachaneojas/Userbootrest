@@ -44,8 +44,6 @@ public class UserController {
 //	@Secured({"Role_Admin"})
 //	@PreAuthorize("hasAuthority('Role_Admin')")
 	public ResponseEntity<?> getallUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String str){
-		log.info("ABC");
-		log.error("ERROR1");
 		return new ResponseEntity<>(userService.getAllUsers(str), HttpStatus.OK);
 	}
 
